@@ -1,0 +1,17 @@
+{
+  "name": "testing-trpc",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "react": "npm run dev -w apps/react-frontend",
+    "backend": "npm run dev -w apps/backend"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "apps/*"
+  ]
+}
