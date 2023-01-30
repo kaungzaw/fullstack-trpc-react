@@ -21,7 +21,6 @@ const routes: Array<RouteObject> = [
   {
     path: "/",
     element: <RootLayout />,
-    errorElement: <NotFoundPage />,
     loader: () => {
       const expiresAt = localStorage.getItem("expiresAt");
       const userId = localStorage.getItem("userId");
@@ -42,6 +41,10 @@ const routes: Array<RouteObject> = [
       {
         path: "settings",
         element: <SettingsPage />,
+      },
+      {
+        path: "*",
+        element: <NotFoundPage />,
       },
     ],
   },

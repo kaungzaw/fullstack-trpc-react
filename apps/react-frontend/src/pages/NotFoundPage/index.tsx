@@ -1,5 +1,7 @@
+import { Center } from "@chakra-ui/react";
+
 const NotFoundPage = () => {
-  return <div>NotFoundPage</div>;
+  return <Center mt={10}>Page Not Found</Center>;
 };
 
 export default NotFoundPage;
