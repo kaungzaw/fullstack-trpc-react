@@ -1,4 +1,5 @@
 import { trpcProxyClient } from "react-frontend/src/utils/trpc";
+import { Button } from "@chakra-ui/react";
 
 const HomePage = () => {
   const signUp = async () => {
@@ -35,6 +36,7 @@ const HomePage = () => {
       <button onClick={signIn}>sign in</button>
       <button onClick={getUsers}>getUsers</button>
       <button onClick={signOut}>sign out</button>
+      <Button>OK</Button>
     </div>
   );
 };

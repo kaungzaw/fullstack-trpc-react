@@ -1,46 +1,47 @@
 import type { RouteObject } from "react-router-dom";
-import RequireAuth from "./components/RequireAuth";
-import RootLayout from "./layouts/RootLayout";
-import NotFoundPage from "./pages/NotFoundPage";
-import HomePage from "./pages/HomePage";
-import SignInPage from "./pages/SignInPage";
-import SignUpPage from "./pages/SignUpPage";
-import SettingsPage from "./pages/SettingsPage";
-import UsersPage from "./pages/UsersPage";
+import { redirect } from "react-router-dom";
+import routeNames from "constants/routeNames";
+import RootLayout from "layouts/RootLayout";
+import NotFoundPage from "pages/NotFoundPage";
+import HomePage from "pages/HomePage";
+import SignInPage from "pages/SignInPage";
+import SignUpPage from "pages/SignUpPage";
+import SettingsPage from "pages/SettingsPage";
+import UsersPage from "pages/UsersPage";
 
 const routes: Array<RouteObject> = [
+  {
+    path: routeNames.SIGN_IN,
+    element: <SignInPage />,
+  },
+  {
+    path: routeNames.SIGN_UP,
+    element: <SignUpPage />,
+  },
   {
     path: "/",
     element: <RootLayout />,
     errorElement: <NotFoundPage />,
+    loader: () => {
+      const expiresAt = localStorage.getItem("expiresAt");
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        throw redirect("/sign-in");
+      }
+      return { expiresAt, userId };
+    },
     children: [
       {
         path: "",
         element: <HomePage />,
       },
       {
-        path: "sign-in",
-        element: <SignInPage />,
-      },
-      {
-        path: "sign-up",
-        element: <SignUpPage />,
-      },
-      {
         path: "users",
-        element: (
-          <RequireAuth>
-            <UsersPage />
-          </RequireAuth>
-        ),
+        element: <UsersPage />,
       },
       {
         path: "settings",
-        element: (
-          <RequireAuth>
-            <SettingsPage />
-          </RequireAuth>
-        ),
+        element: <SettingsPage />,
       },
     ],
   },

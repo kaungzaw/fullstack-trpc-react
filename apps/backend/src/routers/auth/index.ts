@@ -23,10 +23,13 @@ export const authRouter = router({
         throw new TRPCError({ code: "UNAUTHORIZED" });
       }
       const token = createToken({ userId: user.id });
-      res.cookie("token", token, { httpOnly: true, maxAge: expiresIn });
+      res.cookie("token", token, {
+        httpOnly: true,
+        sameSite: "strict",
+        maxAge: expiresIn,
+      });
       const expiresAt = Date.now() + expiresIn;
-      res.cookie("expiresAt", expiresAt);
-      return user.id;
+      return { userId: user.id, expiresAt: expiresAt.toString() };
     }),
   signUp: publicProcedure
     .input(
@@ -59,8 +62,7 @@ export const authRouter = router({
       throw new TRPCError({ code: "UNAUTHORIZED" });
     }
     const expires = new Date(Date.now() - 60 * 1000);
-    res.cookie("token", "", { httpOnly: true, expires });
-    res.cookie("expiresAt", "", { expires });
+    res.cookie("token", "", { httpOnly: true, sameSite: "strict", expires });
     return userId;
   }),
 });

@@ -1,6 +1,5 @@
 import { createTRPCReact } from "@trpc/react-query";
 import { createTRPCProxyClient, httpBatchLink } from "@trpc/client";
-import Cookies from "js-cookie";
 import type { AppRouter } from "backend/src/routers/_app";
 
 const url = import.meta.env.VITE_API_URL ?? "";
@@ -14,12 +13,13 @@ const fetchFunction = async (
   const response = await fetch(url, options);
   if (!response.ok) {
     if (response.status === 401) {
-      const expiresAt = Cookies.get("expiresAt");
+      const expiresAt = localStorage.getItem("expiresAt");
       if (!expiresAt) {
         console.log("no token");
       } else {
         console.log("expired token");
-        Cookies.remove("expiresAt");
+        localStorage.removeItem("expiresAt");
+        localStorage.removeItem("userId");
       }
     }
   }
