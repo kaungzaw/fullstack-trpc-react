@@ -66,14 +66,13 @@ const RootLayout = () => {
   const navigate = useNavigate();
 
   const signOut = async () => {
-    const signedInUserId = localStorage.getItem("userId");
-    const userId = await trpcProxyClient.auth.signOut.mutate();
-    if (signedInUserId === userId) {
+    try {
+      await trpcProxyClient.auth.signOut.mutate();
+    } catch {
+    } finally {
       localStorage.removeItem("expiresAt");
       localStorage.removeItem("userId");
       navigate(routeNames.SIGN_IN);
-    } else {
-      console.log("invalid userId");
     }
   };
 
