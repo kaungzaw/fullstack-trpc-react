@@ -1,7 +1,11 @@
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
-import type { TokenPayload } from "../types";
+import type { JwtPayload } from "jsonwebtoken";
 import { inferAsyncReturnType, initTRPC, TRPCError } from "@trpc/server";
 import { getTokenPayload } from "./jwt";
+
+interface TokenPayload extends JwtPayload {
+  userId: string;
+}
 
 export const createContext = ({ req, res }: CreateExpressContextOptions) => {
   const { token } = req.cookies;
