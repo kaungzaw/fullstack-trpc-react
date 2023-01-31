@@ -9,10 +9,9 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tsc": "tsc",
     "dev": "tsx watch src/index",
-    "build": "npm run tsc",
-    "start": "npm run build && node dist/index"
+    "build": "tsc",
+    "start": "node dist/index"
   },
   "author": "",
   "license": "ISC",

@@ -8,7 +8,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "react": "npm run dev -w react-frontend",
     "backend": "npm run dev -w backend",
-    "start": "npm run build -w react-frontend && npm run start -w backend"
+    "build": "npm run build -w react-frontend && npm run build -w backend",
+    "start": "npm run start -w backend"
   },
   "keywords": [],
   "author": "",
