@@ -65,4 +65,14 @@ export const authRouter = router({
     const expires = new Date(Date.now() - 60 * 1000);
     res.cookie("token", "", { httpOnly: true, sameSite: "strict", expires });
   }),
+  deleteAccount: publicProcedure.mutation(async ({ ctx }) => {
+    const { res, userId } = ctx;
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+    await prisma.user.delete({ where: { id: userId } });
+    const expires = new Date(Date.now() - 60 * 1000);
+    res.cookie("token", "", { httpOnly: true, sameSite: "strict", expires });
+  }),
 });

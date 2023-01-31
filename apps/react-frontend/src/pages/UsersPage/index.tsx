@@ -1,4 +1,4 @@
-import { trpc } from "../../utils/trpc";
+import { trpc } from "utils/trpc";
 
 const UsersPage = () => {
   const { data, isLoading } = trpc.user.getAllUsers.useQuery();

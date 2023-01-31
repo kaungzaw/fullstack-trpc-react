@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
 import { redirect } from "react-router-dom";
+import { trpcProxyClient } from "utils/trpc";
 import routeNames from "constants/routeNames";
 
 const RootLayout = lazy(() => import("layouts/RootLayout"));
@@ -23,13 +24,14 @@ const routes: Array<RouteObject> = [
   {
     path: "/",
     element: <RootLayout />,
-    loader: () => {
-      const expiresAt = localStorage.getItem("expiresAt");
+    loader: async () => {
+      // const expiresAt = localStorage.getItem("expiresAt");
       const userId = localStorage.getItem("userId");
       if (!userId) {
         throw redirect(routeNames.SIGN_IN);
       }
-      return { expiresAt, userId };
+      const user = await trpcProxyClient.user.getUserById.query(userId);
+      return { user };
     },
     children: [
       {

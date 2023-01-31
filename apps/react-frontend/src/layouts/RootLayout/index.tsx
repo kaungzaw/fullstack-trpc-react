@@ -20,13 +20,9 @@ import {
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { NavLink, Outlet, useLoaderData, useNavigate } from "react-router-dom";
+import { Prisma } from "@prisma/client";
 import { trpcProxyClient } from "utils/trpc";
 import routeNames from "constants/routeNames";
-
-interface SignInData {
-  expiresAt: string;
-  userId: string;
-}
 
 const links = [
   { label: "Home", url: routeNames.HOME },
@@ -61,7 +57,7 @@ const LinkComponent = ({ label, url }: { label: string; url: string }) => {
 };
 
 const RootLayout = () => {
-  const { expiresAt, userId } = useLoaderData() as SignInData;
+  const { user } = useLoaderData() as { user: Prisma.UserSelect };
   const { isOpen, onOpen, onClose } = useDisclosure();
   const navigate = useNavigate();
 
@@ -123,7 +119,7 @@ const RootLayout = () => {
                   <Center my={2}>
                     <Avatar size={"xl"} />
                   </Center>
-                  <Center>User</Center>
+                  <Center>{user.name}</Center>
                   <MenuDivider />
                 </Box>
                 <MenuItem>Settings</MenuItem>
