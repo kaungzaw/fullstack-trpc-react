@@ -1,13 +1,15 @@
+import { lazy } from "react";
 import type { RouteObject } from "react-router-dom";
 import { redirect } from "react-router-dom";
 import routeNames from "constants/routeNames";
-import RootLayout from "layouts/RootLayout";
-import NotFoundPage from "pages/NotFoundPage";
-import HomePage from "pages/HomePage";
-import SignInPage from "pages/SignInPage";
-import SignUpPage from "pages/SignUpPage";
-import SettingsPage from "pages/SettingsPage";
-import UsersPage from "pages/UsersPage";
+
+const RootLayout = lazy(() => import("layouts/RootLayout"));
+const NotFoundPage = lazy(() => import("pages/NotFoundPage"));
+const HomePage = lazy(() => import("pages/HomePage"));
+const SignInPage = lazy(() => import("pages/SignInPage"));
+const SignUpPage = lazy(() => import("pages/SignUpPage"));
+const UsersPage = lazy(() => import("pages/UsersPage"));
+const SettingsPage = lazy(() => import("pages/SettingsPage"));
 
 const routes: Array<RouteObject> = [
   {

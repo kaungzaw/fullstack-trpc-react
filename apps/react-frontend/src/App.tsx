@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ChakraProvider } from "@chakra-ui/react";
+import { ChakraProvider, Center, Spinner } from "@chakra-ui/react";
 import { Provider as TRPCProvider, trpcClient } from "./utils/trpc";
 import routes from "./routes";
 
@@ -14,7 +14,15 @@ const App = () => {
     <TRPCProvider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <ChakraProvider>
-          <RouterProvider router={router} />
+          <Suspense
+            fallback={
+              <Center mt={10}>
+                <Spinner />
+              </Center>
+            }
+          >
+            <RouterProvider router={router} />
+          </Suspense>
         </ChakraProvider>
       </QueryClientProvider>
     </TRPCProvider>

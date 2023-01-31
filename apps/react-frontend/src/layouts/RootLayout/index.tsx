@@ -1,10 +1,10 @@
+import { Suspense } from "react";
 import {
   Box,
   Flex,
   Center,
   Avatar,
   HStack,
-  Link,
   IconButton,
   Button,
   Menu,
@@ -12,9 +12,11 @@ import {
   MenuList,
   MenuItem,
   MenuDivider,
+  Stack,
+  Text,
+  Spinner,
   useDisclosure,
   useColorModeValue,
-  Stack,
 } from "@chakra-ui/react";
 import { HamburgerIcon, CloseIcon } from "@chakra-ui/icons";
 import { NavLink, Outlet, useLoaderData, useNavigate } from "react-router-dom";
@@ -32,29 +34,31 @@ const links = [
   { label: "Settings", url: routeNames.SETTINGS },
 ];
 
-const LinkComponent = ({ label, url }: { label: string; url: string }) => (
-  <NavLink to={url}>
-    {({ isActive }) => (
-      <Link
-        px={2}
-        py={1}
-        rounded={"md"}
-        display={"flex"}
-        _hover={
-          !isActive
-            ? {
-                textDecoration: "none",
-                bg: useColorModeValue("gray.200", "gray.700"),
-              }
-            : {}
-        }
-        bg={isActive ? "green.200" : "inherit"}
-      >
-        {label}
-      </Link>
-    )}
-  </NavLink>
-);
+const LinkComponent = ({ label, url }: { label: string; url: string }) => {
+  const bgColor = useColorModeValue("gray.200", "gray.700");
+
+  return (
+    <NavLink to={url}>
+      {({ isActive }) => (
+        <Text
+          px={2}
+          py={1}
+          rounded={"md"}
+          _hover={
+            !isActive
+              ? {
+                  bg: bgColor,
+                }
+              : {}
+          }
+          bg={isActive ? "green.200" : "inherit"}
+        >
+          {label}
+        </Text>
+      )}
+    </NavLink>
+  );
+};
 
 const RootLayout = () => {
   const { expiresAt, userId } = useLoaderData() as SignInData;
@@ -132,7 +136,7 @@ const RootLayout = () => {
 
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
-            <Stack as={"nav"} spacing={4}>
+            <Stack as={"nav"} spacing={2}>
               {links.map(({ label, url }) => (
                 <LinkComponent key={url} label={label} url={url} />
               ))}
@@ -141,9 +145,17 @@ const RootLayout = () => {
         ) : null}
       </Box>
 
-      <Box p={2}>
-        <Outlet />
-      </Box>
+      <Suspense
+        fallback={
+          <Center mt={10}>
+            <Spinner />
+          </Center>
+        }
+      >
+        <Box p={2}>
+          <Outlet />
+        </Box>
+      </Suspense>
     </>
   );
 };
