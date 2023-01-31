@@ -2,7 +2,7 @@ import express from "express";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
-import { createContext } from "./trpc";
+import { createContext } from "./utils/trpc";
 import { appRouter } from "./routers/_app";
 
 const app = express();

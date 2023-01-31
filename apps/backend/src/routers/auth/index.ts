@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { compare, hash } from "bcryptjs";
-import { router, publicProcedure } from "../../trpc";
+import { router, publicProcedure } from "../../utils/trpc";
 import { createToken } from "../../utils/jwt";
 import { PrismaClient } from "@prisma/client";
 
