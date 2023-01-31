@@ -1,15 +1,13 @@
 import express from "express";
-// import cors from "cors";
 import cookieParser from "cookie-parser";
+import path from "path";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { createContext } from "./trpc";
 import { appRouter } from "./routers/_app";
 
 const app = express();
-// app.use(cors());
-app.use(cookieParser());
 
-app.use(express.static("../react-frontend/dist"));
+app.use(cookieParser());
 
 app.use(
   "/trpc",
@@ -18,6 +16,14 @@ app.use(
     createContext,
   })
 );
+
+app.use(express.static(path.resolve(__dirname, "../../react-frontend/dist")));
+
+app.get("*", (_req, res) => {
+  res.sendFile(
+    path.resolve(__dirname, "../../react-frontend/dist", "index.html")
+  );
+});
 
 export const startServer = () => {
   const PORT = process.env.PORT;

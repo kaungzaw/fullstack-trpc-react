@@ -214,7 +214,7 @@ const SignUpPage = () => {
                   Sign up
                 </Button>
                 <Text color={"blue.400"} textAlign={"right"}>
-                  <Link as={RouterLink} to={"/" + routeNames.SIGN_IN}>
+                  <Link as={RouterLink} to={routeNames.SIGN_IN}>
                     Sign In
                   </Link>
                 </Text>

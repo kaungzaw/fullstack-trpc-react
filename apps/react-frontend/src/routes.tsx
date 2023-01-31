@@ -25,7 +25,7 @@ const routes: Array<RouteObject> = [
       const expiresAt = localStorage.getItem("expiresAt");
       const userId = localStorage.getItem("userId");
       if (!userId) {
-        throw redirect("/" + routeNames.SIGN_IN);
+        throw redirect(routeNames.SIGN_IN);
       }
       return { expiresAt, userId };
     },
