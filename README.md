@@ -11,3 +11,5 @@
 * React Router
 * TRPC Client
 * React Query
+
+Start api server with "npm run backend" and react frontend with "npm run react"
