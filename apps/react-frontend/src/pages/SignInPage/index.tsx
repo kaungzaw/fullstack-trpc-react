@@ -125,7 +125,7 @@ const SignInPage = () => {
                   Sign In
                 </Button>
                 <Text color={"blue.400"} textAlign={"right"}>
-                  <Link as={RouterLink} to={routeNames.SIGN_UP}>
+                  <Link as={RouterLink} to={"/" + routeNames.SIGN_UP}>
                     Sign Up
                   </Link>
                 </Text>
