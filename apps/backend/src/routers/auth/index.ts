@@ -34,6 +34,7 @@ export const authRouter = router({
   signUp: publicProcedure
     .input(
       z.object({
+        name: z.string(),
         email: z.string().email(),
         password: z
           .string()
@@ -41,19 +42,19 @@ export const authRouter = router({
       })
     )
     .mutation(async ({ input }) => {
-      const { email, password } = input;
+      const { name, email, password } = input;
       const user = await prisma.user.findUnique({ where: { email } });
       if (user) {
         throw new TRPCError({ code: "CONFLICT" });
       }
       const passwordHash = await hash(password, 4);
-      const data = await prisma.user.create({
+      await prisma.user.create({
         data: {
+          name,
           email,
           password: passwordHash,
         },
       });
-      return data.id;
     }),
   signOut: publicProcedure.mutation(async ({ ctx }) => {
     const { res, userId } = ctx;
@@ -63,6 +64,5 @@ export const authRouter = router({
     }
     const expires = new Date(Date.now() - 60 * 1000);
     res.cookie("token", "", { httpOnly: true, sameSite: "strict", expires });
-    return userId;
   }),
 });

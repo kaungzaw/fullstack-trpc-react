@@ -28,9 +28,18 @@ import routeNames from "constants/routeNames";
 const schema = yup
   .object({
     name: yup.string().required("Name is required"),
-    email: yup.string().required("Email is required"),
-    password: yup.string().required("Password is required"),
-    confirmPassword: yup.string().required("Confirm Password is required"),
+    email: yup.string().required("Email is required").email("Invalid Email"),
+    password: yup
+      .string()
+      .required("Password is required")
+      .matches(
+        /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/,
+        "Weak Password"
+      ),
+    confirmPassword: yup
+      .string()
+      .required("Confirm Password is required")
+      .oneOf([yup.ref("password")], "Passwords do not match"),
   })
   .required();
 
@@ -57,18 +66,17 @@ const SignUpPage = () => {
     name,
     email,
     password,
-    confirmPassword,
   }) => {
     try {
-      const userId = await trpcProxyClient.auth.signUp.mutate({
+      await trpcProxyClient.auth.signUp.mutate({
+        name,
         email,
         password,
       });
-      localStorage.setItem("userId", userId);
-      navigate(routeNames.HOME);
+      navigate(routeNames.SIGN_IN);
     } catch (error: any) {
       toast({
-        title: "Sign In failed.",
+        title: "Sign Up failed.",
         description: error.message,
         position: "top",
         status: "error",
@@ -166,7 +174,7 @@ const SignUpPage = () => {
                 </FormErrorMessage>
               </FormControl>
               <FormControl
-                isInvalid={errors.password ? true : false}
+                isInvalid={errors.confirmPassword ? true : false}
                 isDisabled={isSubmitting}
                 isRequired
               >
@@ -203,13 +211,13 @@ const SignUpPage = () => {
               </FormControl>
               <Stack>
                 <Button
-                  loadingText="Submitting"
-                  size="lg"
                   bg={"blue.400"}
                   color={"white"}
                   _hover={{
                     bg: "blue.500",
                   }}
+                  type="submit"
+                  isLoading={isSubmitting}
                 >
                   Sign up
                 </Button>
