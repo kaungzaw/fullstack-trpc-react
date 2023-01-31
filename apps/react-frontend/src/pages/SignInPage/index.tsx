@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Flex,
   Box,
@@ -6,20 +5,28 @@ import {
   FormLabel,
   FormErrorMessage,
   Input,
-  Checkbox,
   Stack,
   Link,
   Button,
   Heading,
+  Text,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import type { SubmitHandler } from "react-hook-form";
 import { trpcProxyClient } from "utils/trpc";
-import LoadingOverlay from "components/LoadingOverlay";
-import routes from "constants/routeNames";
+import routeNames from "constants/routeNames";
+
+const schema = yup
+  .object({
+    email: yup.string().required("Email is required"),
+    password: yup.string().required("Password is required"),
+  })
+  .required();
 
 interface FormData {
   email: string;
@@ -36,6 +43,7 @@ const SignInPage = () => {
       email: "hello@world.hw",
       password: "HelloWorld@123",
     },
+    resolver: yupResolver(schema),
   });
   const navigate = useNavigate();
   const toast = useToast();
@@ -48,7 +56,7 @@ const SignInPage = () => {
       });
       localStorage.setItem("userId", userId);
       localStorage.setItem("expiresAt", expiresAt);
-      navigate(routes.HOME);
+      navigate(routeNames.HOME);
     } catch (error: any) {
       toast({
         title: "Sign In failed.",
@@ -85,18 +93,7 @@ const SignInPage = () => {
                 isDisabled={isSubmitting}
               >
                 <FormLabel htmlFor="email">Email</FormLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register("email", {
-                    required: { value: true, message: "Email is required" },
-                    pattern: {
-                      value:
-                        /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
-                      message: "Invalid Email",
-                    },
-                  })}
-                />
+                <Input id="email" type="email" {...register("email")} />
                 <FormErrorMessage>
                   {errors.email && errors.email.message}
                 </FormErrorMessage>
@@ -109,26 +106,13 @@ const SignInPage = () => {
                 <Input
                   id="password"
                   type="password"
-                  {...register("password", {
-                    required: {
-                      value: true,
-                      message: "Password is required",
-                    },
-                  })}
+                  {...register("password")}
                 />
                 <FormErrorMessage>
                   {errors.password && errors.password.message}
                 </FormErrorMessage>
               </FormControl>
-              <Stack spacing={10}>
-                <Stack
-                  direction={{ base: "column", sm: "row" }}
-                  align={"start"}
-                  justify={"space-between"}
-                >
-                  <Checkbox>Remember me</Checkbox>
-                  <Link color={"blue.400"}>Forgot password?</Link>
-                </Stack>
+              <Stack>
                 <Button
                   bg={"blue.400"}
                   color={"white"}
@@ -140,6 +124,11 @@ const SignInPage = () => {
                 >
                   Sign In
                 </Button>
+                <Text color={"blue.400"} textAlign={"right"}>
+                  <Link as={RouterLink} to={routeNames.SIGN_UP}>
+                    Sign Up
+                  </Link>
+                </Text>
               </Stack>
             </Stack>
           </form>

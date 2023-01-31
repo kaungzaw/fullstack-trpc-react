@@ -2,11 +2,13 @@
   "name": "testing-trpc",
   "version": "1.0.0",
   "description": "",
+  "private": true,
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "react": "npm run dev -w apps/react-frontend",
-    "backend": "npm run dev -w apps/backend"
+    "react": "npm run dev -w react-frontend",
+    "backend": "npm run dev -w backend",
+    "start": "npm run build -w react-frontend && npm run start -w backend"
   },
   "keywords": [],
   "author": "",

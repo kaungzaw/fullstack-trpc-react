@@ -9,6 +9,8 @@ const app = express();
 // app.use(cors());
 app.use(cookieParser());
 
+app.use(express.static("../react-frontend/dist"));
+
 app.use(
   "/trpc",
   createExpressMiddleware({

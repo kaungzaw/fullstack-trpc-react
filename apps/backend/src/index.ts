@@ -5,16 +5,6 @@ import { startServer } from "./server";
 
 const prisma = new PrismaClient();
 
-// const main = async () => {
-//   try {
-//     await connectDatabase();
-//     await startServer();
-//   } catch (error) {
-//     console.log(error);
-//     process.exit(1);
-//   }
-// };
-
 async function main() {
   await prisma.$connect();
   await startServer();

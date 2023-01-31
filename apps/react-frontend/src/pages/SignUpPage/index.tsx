@@ -4,6 +4,7 @@ import {
   Box,
   FormControl,
   FormLabel,
+  FormErrorMessage,
   Input,
   InputGroup,
   InputRightElement,
@@ -11,16 +12,71 @@ import {
   Button,
   Heading,
   Text,
-  useColorModeValue,
   Link,
+  useColorModeValue,
+  useToast,
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import { Link as RouterLink } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import type { SubmitHandler } from "react-hook-form";
+import { trpcProxyClient } from "utils/trpc";
 import routeNames from "constants/routeNames";
+
+const schema = yup
+  .object({
+    name: yup.string().required("Name is required"),
+    email: yup.string().required("Email is required"),
+    password: yup.string().required("Password is required"),
+    confirmPassword: yup.string().required("Confirm Password is required"),
+  })
+  .required();
+
+interface FormData {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}
 
 const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({ resolver: yupResolver(schema) });
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const onSubmit: SubmitHandler<FormData> = async ({
+    name,
+    email,
+    password,
+    confirmPassword,
+  }) => {
+    try {
+      const userId = await trpcProxyClient.auth.signUp.mutate({
+        email,
+        password,
+      });
+      localStorage.setItem("userId", userId);
+      navigate(routeNames.HOME);
+    } catch (error: any) {
+      toast({
+        title: "Sign In failed.",
+        description: error.message,
+        position: "top",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    }
+  };
 
   return (
     <Flex
@@ -41,71 +97,130 @@ const SignUpPage = () => {
           boxShadow={"lg"}
           p={8}
         >
-          <Stack spacing={4}>
-            <FormControl id="name" isRequired>
-              <FormLabel>Name</FormLabel>
-              <Input type="text" />
-            </FormControl>
-            <FormControl id="email" isRequired>
-              <FormLabel>Email address</FormLabel>
-              <Input type="email" />
-            </FormControl>
-            <FormControl id="password" isRequired>
-              <FormLabel>Password</FormLabel>
-              <InputGroup>
-                <Input type={showPassword ? "text" : "password"} />
-                <InputRightElement h={"full"}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      setShowPassword((showPassword) => !showPassword)
-                    }
-                  >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
-            <FormControl id="confirm-password" isRequired>
-              <FormLabel>Confirm Password</FormLabel>
-              <InputGroup>
-                <Input type={showConfirmPassword ? "text" : "password"} />
-                <InputRightElement h={"full"}>
-                  <Button
-                    variant={"ghost"}
-                    onClick={() =>
-                      setShowConfirmPassword(
-                        (showConfirmPassword) => !showConfirmPassword
-                      )
-                    }
-                  >
-                    {showPassword ? <ViewIcon /> : <ViewOffIcon />}
-                  </Button>
-                </InputRightElement>
-              </InputGroup>
-            </FormControl>
-            <Stack spacing={10} pt={2}>
-              <Button
-                loadingText="Submitting"
-                size="lg"
-                bg={"blue.400"}
-                color={"white"}
-                _hover={{
-                  bg: "blue.500",
-                }}
+          <form onSubmit={handleSubmit(onSubmit)} autoComplete="off" noValidate>
+            <Stack spacing={4}>
+              <FormControl
+                isInvalid={errors.name ? true : false}
+                isDisabled={isSubmitting}
+                isRequired
               >
-                Sign up
-              </Button>
+                <FormLabel htmlFor="name">Name</FormLabel>
+                <Input
+                  id="name"
+                  type="name"
+                  {...register("name", {
+                    required: { value: true, message: "Name is required" },
+                  })}
+                />
+                <FormErrorMessage>
+                  {errors.name && errors.name.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl
+                isInvalid={errors.email ? true : false}
+                isDisabled={isSubmitting}
+                isRequired
+              >
+                <FormLabel htmlFor="email">Email</FormLabel>
+                <Input
+                  id="email"
+                  type="email"
+                  {...register("email", {
+                    required: { value: true, message: "Email is required" },
+                  })}
+                />
+                <FormErrorMessage>
+                  {errors.email && errors.email.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl
+                isInvalid={errors.password ? true : false}
+                isDisabled={isSubmitting}
+                isRequired
+              >
+                <FormLabel htmlFor="password">Password</FormLabel>
+                <InputGroup>
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    {...register("password", {
+                      required: {
+                        value: true,
+                        message: "Password is required",
+                      },
+                    })}
+                  />
+                  <InputRightElement h={"full"}>
+                    <Button
+                      variant={"ghost"}
+                      onClick={() =>
+                        setShowPassword((showPassword) => !showPassword)
+                      }
+                    >
+                      {showPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage>
+                  {errors.password && errors.password.message}
+                </FormErrorMessage>
+              </FormControl>
+              <FormControl
+                isInvalid={errors.password ? true : false}
+                isDisabled={isSubmitting}
+                isRequired
+              >
+                <FormLabel htmlFor="confirmPassword">
+                  Confirm Password
+                </FormLabel>
+                <InputGroup>
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    {...register("confirmPassword", {
+                      required: {
+                        value: true,
+                        message: "Confirm Password is required",
+                      },
+                    })}
+                  />
+                  <InputRightElement h={"full"}>
+                    <Button
+                      variant={"ghost"}
+                      onClick={() =>
+                        setShowConfirmPassword(
+                          (showConfirmPassword) => !showConfirmPassword
+                        )
+                      }
+                    >
+                      {showConfirmPassword ? <ViewIcon /> : <ViewOffIcon />}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+                <FormErrorMessage>
+                  {errors.confirmPassword && errors.confirmPassword.message}
+                </FormErrorMessage>
+              </FormControl>
+              <Stack>
+                <Button
+                  loadingText="Submitting"
+                  size="lg"
+                  bg={"blue.400"}
+                  color={"white"}
+                  _hover={{
+                    bg: "blue.500",
+                  }}
+                >
+                  Sign up
+                </Button>
+                <Text color={"blue.400"} textAlign={"right"}>
+                  <Link as={RouterLink} to={routeNames.SIGN_IN}>
+                    Sign In
+                  </Link>
+                </Text>
+              </Stack>
             </Stack>
-            <Stack pt={6}>
-              <Text align={"center"}>
-                Already have an account?{" "}
-                <Link color={"blue.400"}>
-                  <RouterLink to={routeNames.SIGN_IN}>Sign In</RouterLink>
-                </Link>
-              </Text>
-            </Stack>
-          </Stack>
+          </form>
         </Box>
       </Stack>
     </Flex>
